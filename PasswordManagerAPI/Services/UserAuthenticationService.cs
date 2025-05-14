@@ -1,6 +1,7 @@
 ﻿using PasswordManagerAPI.Context;
 using PasswordManagerAPI.DTOs.UserAuthenticationDTO;
 using PasswordManagerAPI.Entitys;
+using PasswordManagerAPI.Helpers;
 using PasswordManagerAPI.Interfaces;
 
 namespace PasswordManagerAPI.Services
@@ -56,7 +57,8 @@ namespace PasswordManagerAPI.Services
 
         public async Task<string> SignIn(SignInInputDTO input)
         {
-            var user = _context.Users.Where(x => x.Email == input.Username && x.Password == input.Password && x.IsLoggedIn ==false).SingleOrDefault();
+            input.Username = HashingHelper.HashValue384(input.Username);
+            var user = _context.Users.Where(x => (x.Email == input.Username || x.Username == input.Username) && x.Password == input.Password && x.IsLoggedIn ==false).SingleOrDefault();
             if (user == null)
             {
                 return " User not Found";
@@ -93,9 +95,9 @@ namespace PasswordManagerAPI.Services
         public async Task<string> SignUp(SignUpInputDTO input)
         {
             User user = new User();
-            user.Email = input.Email;
-            user.Password = input.Password;
-            user.Username = input.Username;
+            user.Email = HashingHelper.HashValue384(input.Email);
+            user.Password = HashingHelper.HashValue384(input.Password);
+            user.Username = HashingHelper.HashValue384(input.Username);
             user.RoleId = 1;
             user.CreatedBy = "System";
             user.CreationDate = DateTime.Now;
@@ -115,7 +117,8 @@ namespace PasswordManagerAPI.Services
 
         public async Task<string> Verification(VerificationInputDTO input)
         {
-            var user = _context.Users.Where(x=> x.Email == input.Email&& x.OTPCode==input.OTPCode&&x.IsLoggedIn==false && x.OTPExipry>DateTime.Now).SingleOrDefault();
+            input.Email = HashingHelper.HashValue384(input.Email);
+            var user = _context.Users.Where(x=> (x.Email == input.Email ||x.Username==input.Email)&& x.OTPCode==input.OTPCode&&x.IsLoggedIn==false && x.OTPExipry>DateTime.Now).SingleOrDefault();
 
             if (user == null)
             {
