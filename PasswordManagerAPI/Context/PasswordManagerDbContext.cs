@@ -7,6 +7,7 @@ namespace PasswordManagerAPI.Context
     {
         public DbSet<LookupType> LookupTypes { get; set; }
         public DbSet<LookupItem> LookupItems { get; set; }
+        public DbSet<User> Users { get; set; }
         public PasswordManagerDbContext(DbContextOptions options) : base(options)
         {
         }

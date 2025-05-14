@@ -13,6 +13,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<PasswordManagerDbContext>(opt => opt.UseSqlServer("Data Source=LAPTOP-QGFR6N5D;Initial Catalog=PassMangeDB;Integrated Security=True;Encrypt=True;Trust Server Certificate=True"));
 builder.Services.AddScoped<ILookupItem,LookupItemService>();
+builder.Services.AddScoped<IUserAuthentication,UserAuthenticationService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
