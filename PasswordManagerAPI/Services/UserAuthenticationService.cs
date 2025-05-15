@@ -130,9 +130,20 @@ namespace PasswordManagerAPI.Services
             });
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
-            return "Verification Your Email By OTP Code";
 
+            if (user.Id > 0)
+            {
+                Profile profile = new Profile();
+                profile.Email = input.Email;
+                profile.Phone = null;
+                profile.Image = null;
+                profile.UserId = user.Id;
+                _context.Add(profile);
+                await _context.SaveChangesAsync();
+                return "Verification Your Email By OTP Code";
+            }
 
+            return "Something Wrong";
         }
 
         public async Task<string> Verification(VerificationInputDTO input)
