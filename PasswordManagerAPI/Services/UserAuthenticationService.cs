@@ -1,4 +1,6 @@
-﻿using PasswordManagerAPI.Context;
+﻿using EmailServicePackage;
+using EmailServicePackage.Interfaces;
+using PasswordManagerAPI.Context;
 using PasswordManagerAPI.DTOs.UserAuthenticationDTO;
 using PasswordManagerAPI.Entitys;
 using PasswordManagerAPI.Helpers;
@@ -9,9 +11,11 @@ namespace PasswordManagerAPI.Services
     public class UserAuthenticationService:IUserAuthentication
     {
         private readonly PasswordManagerDbContext _context;
-        public UserAuthenticationService(PasswordManagerDbContext context)
+        private readonly ISmtpService _smtpService;
+        public UserAuthenticationService(PasswordManagerDbContext context, ISmtpService smtpService)
         {
             _context = context;
+            _smtpService = smtpService;
         }
 
         public async Task<bool> ResetPersonPassword(ResetPersonPasswordInputDTO input)
@@ -48,7 +52,12 @@ namespace PasswordManagerAPI.Services
             var otp = random.Next(11111, 99999);
             user.OTPCode = otp.ToString();
             user.OTPExipry = DateTime.Now.AddMinutes(5);
-
+            await _smtpService.SendEmailAsync(new SendEmailDto()
+            {
+                To = email,
+                Subject = "Your OTP",
+                Body = $"{user.OTPCode} valid until {user.OTPExipry}"
+            });
              _context.Users.Update(user);
            await _context.SaveChangesAsync();
             return true;
@@ -57,6 +66,7 @@ namespace PasswordManagerAPI.Services
 
         public async Task<string> SignIn(SignInInputDTO input)
         {
+            var orignalUserName = input.Username;
             input.Username = HashingHelper.HashValue384(input.Username);
             var user = _context.Users.Where(x => (x.Email == input.Username || x.Username == input.Username) && x.Password == input.Password && x.IsLoggedIn ==false).SingleOrDefault();
             if (user == null)
@@ -68,7 +78,12 @@ namespace PasswordManagerAPI.Services
             var otp = random.Next(11111, 99999);
             user.OTPCode=otp.ToString();
             user.OTPExipry=DateTime.Now.AddMinutes(5);
-
+            await _smtpService.SendEmailAsync(new SendEmailDto()
+            {
+                To = orignalUserName,
+                Subject = "Your OTP",
+                Body = $"{user.OTPCode} valid until {user.OTPExipry}"
+            });
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
 
@@ -107,7 +122,12 @@ namespace PasswordManagerAPI.Services
 
             user.OTPCode = otp.ToString();
             user.OTPExipry=DateTime.Now.AddMinutes(5);
-
+            await _smtpService.SendEmailAsync(new SendEmailDto()
+            {
+                To = input.Email,
+                Subject = "Your OTP",
+                Body = $"{user.OTPCode} valid until {user.OTPExipry}"
+            });
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
             return "Verification Your Email By OTP Code";
@@ -143,7 +163,9 @@ namespace PasswordManagerAPI.Services
 
                 _context.Users.Update(user);
                 await _context.SaveChangesAsync();
-                return " ";
+
+                var resulte = TokenHelper.GenrateJWTToken(user.Id.ToString(),"Client");
+                return resulte;
             }
         }
     }

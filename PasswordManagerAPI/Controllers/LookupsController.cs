@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using PasswordManagerAPI.Helpers;
 using PasswordManagerAPI.Interfaces;
 
 namespace PasswordManagerAPI.Controllers
@@ -13,6 +14,7 @@ namespace PasswordManagerAPI.Controllers
         {
             _lookupItem = lookupItem;
         }
+
         [HttpGet("Get-Lookup-Item/{typeId}")]
         public async Task<IActionResult> GetLookups([FromRoute] int typeId)
         {
