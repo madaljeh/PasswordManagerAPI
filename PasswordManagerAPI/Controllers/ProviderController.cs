@@ -16,6 +16,7 @@ namespace PasswordManagerAPI.Controllers
         {
             _Provider = Provider;
         }
+        [HttpPost("[action]")]
         public async Task<IActionResult> CreateUpdateProvider(CreateUpdateProviderDTO input)
         {
             try
@@ -28,7 +29,7 @@ namespace PasswordManagerAPI.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
-
+        [HttpGet("[action]")]
         public async Task<IActionResult> GetProvider()
         {
             try
@@ -42,6 +43,7 @@ namespace PasswordManagerAPI.Controllers
             }
         }
 
+        [HttpGet("[action]")]
         public async Task<IActionResult> GetProviderDetails(int Id)
         {
             try

@@ -1,5 +1,6 @@
 using EmailServicePackage;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using PasswordManagerAPI.Context;
 using PasswordManagerAPI.Interfaces;
 using PasswordManagerAPI.Services;
@@ -28,7 +29,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "Uploads")),
+    RequestPath = "/uploads" 
+});
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
