@@ -18,6 +18,7 @@ builder.Services.AddScoped<ILookupItem,LookupItemService>();
 builder.Services.AddScoped<IUserAuthentication,UserAuthenticationService>();
 builder.Services.AddScoped<IUserProfile,UserProfileService>();
 builder.Services.AddScoped<IProvider,ProviderService>();
+builder.Services.AddScoped<IAccountInterface,AccountService>();
 
 builder.Services.AddSmtpService(builder.Configuration);
 

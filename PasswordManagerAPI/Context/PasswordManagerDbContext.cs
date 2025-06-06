@@ -11,6 +11,7 @@ namespace PasswordManagerAPI.Context
         public DbSet<User> Users { get; set; }
         public DbSet<Profile> Profiles { get; set; }
         public DbSet<Provider> Providers { get; set; }
+        public DbSet<Account> Accounts { get; set; }
         public PasswordManagerDbContext(DbContextOptions options) : base(options)
         {
         }
